@@ -1,21 +1,24 @@
 {
-  "name": "bfx-svc-js",
-  "version": "0.0.5",
-  "description": "Bitfinex Base Service",
+  "name": "senatus",
+  "version": "0.0.1",
+  "description": "Bitfinex General MultiSig Service",
   "author": {
-    "name": "prdn",
-    "email": "paolo@bitfinex.com"
+    "name": "fei",
+    "email": "fei@bitfinex.com"
   },
   "keywords": [
-    "bitfinex"
+    "multisig"
   ],
   "dependencies": {
     "async": "^2.5.0",
     "bfx-facs-base": "git+https://github.com/bitfinexcom/bfx-facs-base.git",
     "bfx-facs-interval": "https://github.com/bitfinexcom/bfx-facs-interval.git",
     "bfx-svc-boot-js": "https://github.com/bitfinexcom/bfx-svc-boot-js.git",
+    "bfx-wrk-api": "git+https://github.com/bitfinexcom/bfx-wrk-api.git",
     "bfx-wrk-base": "git+https://github.com/bitfinexcom/bfx-wrk-base.git",
     "lodash": "^4.17.4",
+    "uuid": "^3.1.0",
+    "wasteland": "git+https://github.com/bitfinexcom/wasteland.git",
     "yargs": "^6.3.0"
   },
   "engine": {
@@ -24,15 +27,16 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bitfinexcom/bfx-svc-js.git"
+    "url": "git+https://github.com/bitfinexcom/senatus.git"
   },
   "maintainers": [
     {
-      "name": "prdn",
-      "email": "paolo@bitfinex.com"
+      "name": "fei",
+      "email": "fei@bitfinex.com"
     }
   ],
   "devDependencies": {
+    "grenache-grape": "^0.5.6",
     "mocha": "^3.4.2",
     "standard": "^10.0.3"
   }

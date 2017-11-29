@@ -3,11 +3,11 @@
 const async = require('async')
 const Base = require('bfx-facs-base')
 
-class Proposal extends Base {
+class Senatus extends Base {
   constructor (caller, opts, ctx) {
     super(caller, opts, ctx)
 
-    this.name = 'proposal'
+    this.name = 'senatus'
 
     this.init()
   }
@@ -24,12 +24,12 @@ class Proposal extends Base {
     ], cb)
   }
 
-  getProposalConf () {
-    return this.caller.conf.proposal
+  getSenatusConf () {
+    return this.caller.conf.senatus
   }
 
   getType () {
-    return this.getProposalConf().type
+    return this.getSenatusConf().type
   }
 
   cleanup () {
@@ -50,4 +50,4 @@ class Proposal extends Base {
   }
 }
 
-module.exports = Proposal
+module.exports = Senatus
