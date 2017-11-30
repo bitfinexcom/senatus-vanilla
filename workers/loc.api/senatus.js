@@ -2,6 +2,7 @@
 
 const _ = require('lodash')
 const uuid = require('uuid')
+const sendmail = require('sendmail')()
 
 const { Api } = require('bfx-wrk-api')
 
@@ -112,35 +113,36 @@ class Senatus extends Api {
   }
 
   _verifySigs (payload, whitelist) {
-    let verified = true
-    let m = payload.msg
-    const sigs = payload.sigs
-    for (let i = 0; i < sigs.length; i++) {
-      const sig = sigs[i]
-      const pubkey = whitelist.get(sig.signer).pubkey
-      if (!this._sigAlgo.verify(m, sig.signedMsg, pubkey)) {
-        verified = false
-        break
-      }
-      m = sig.signedMsg
-    }
-    return verified
+    return false
   }
 
   _notify (payload, hash, whitelist) {
-    const notifier = this._notifier
     if (payload.completed) {
-      const note = 'The following has been signed\n' + JSON.stringify(payload)
       payload.signers.forEach(function (signer) {
         const user = whitelist.get(signer)
-        notifier._notify(user.contact, note)
+        sendmail({
+          from: 'no-reply@bitfinex.com',
+          to: user.email,
+          subject: hash + ' has been signed',
+          text: 'The following has been signed\n\n' + JSON.stringify(payload),
+        }, function(err, reply) {
+          console.log(err && err.stack);
+          console.dir(reply);
+        })
       })
     } else {
-      const note = 'Your signature is required for ' + hash
       payload.signers.forEach(function (signer) {
         if (!_.includes(payload.sigs, {signer: signer})) {
           const user = whitelist.get(signer)
-          notifier._notify(user.contact, note)
+          sendmail({
+            from: 'no-reply@bitfinex.com',
+            to: user.email,
+            subject: hash + ' requires your signature',
+            text: 'Your signature is required for ' + hash,
+          }, function(err, reply) {
+            console.log(err && err.stack);
+            console.dir(reply);
+          })
         }
       })
     }
