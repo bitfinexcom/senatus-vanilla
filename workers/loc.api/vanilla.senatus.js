@@ -3,8 +3,7 @@
 const sigUtil = require('eth-sig-util')
 const Senatus = require('./senatus')
 
-class SenatusEth extends Senatus {
-
+class SenatusVanilla extends Senatus {
   _verifySigs (payload, whitelist) {
     let verified = true
     let m = payload.msg
@@ -22,7 +21,6 @@ class SenatusEth extends Senatus {
     }
     return verified
   }
-
 }
 
-module.exports = SenatusEth
+module.exports = SenatusVanilla

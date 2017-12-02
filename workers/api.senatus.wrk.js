@@ -14,7 +14,7 @@ class WrkSenatusApi extends WrkApi {
       ['fac', 'senatus', '0', '0', {}, -3]
     ])
 
-    this._initWasteland(this.getApiConf())
+    this._initWasteland(this.conf.senatus)
   }
 
   getGrcServices () {
@@ -27,7 +27,7 @@ class WrkSenatusApi extends WrkApi {
     switch (type) {
       case 'api_bfx':
         ctx.wasteland = this._wasteLand
-        ctx.whitelistKey = this.getApiConf().whitelistKey
+        ctx.whitelistKey = this.conf.senatus.whitelistKey
         break
     }
 

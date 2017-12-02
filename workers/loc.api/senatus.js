@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash')
+const async = require('async')
 const uuid = require('uuid')
 const sendmail = require('sendmail')()
 
@@ -14,12 +15,30 @@ class Senatus extends Api {
   }
 
   getWhitelist (space, cb) {
-    const wasteland = this.ctx.wasteland
-    const whitelistKey = this.ctx.whitelistKey
-    wasteland.get(whitelistKey, {}, function (err, res) {
-      if (err) return cb(err)
-      return cb(null, res)
-    })
+    // const wasteland = this.ctx.wasteland
+    // const whitelistKey = this.ctx.whitelistKey
+    // wasteland.get(whitelistKey, {}, function (err, res) {
+    //   if (err) return cb(err)
+    //   return cb(null, res)
+    // })
+
+    return cb(null, [
+      {
+        username: 'alice',
+        email: 'fyang1024@gmail.com',
+        pubkey: '0x3398dB97a2d2D428537F747D9814587D23C832a6'
+      },
+      {
+        username: 'bob',
+        email: 'fyang1024@gmail.com',
+        pubkey: '0x3398dB97a2d2D428537F747D9814587D23C832a6'
+      },
+      {
+        username: 'carol',
+        email: 'fyang1024@gmail.com',
+        pubkey: '0x3398dB97a2d2D428537F747D9814587D23C832a6'
+      }
+    ])
   }
 
   getPayload (space, hash, cb) {
@@ -39,6 +58,9 @@ class Senatus extends Api {
       cb = sig || payload
       return cb(new Error('ERROR_PROVIDE_PAYLOAD_SIG'))
     }
+    const validate = this._validate
+    const notify = this._notify
+    const wasteland = this.ctx.wasteland
     this.getWhitelist(space, function (err, res) {
       if (err) return cb(err)
       const whitelist = new Map()
@@ -54,18 +76,17 @@ class Senatus extends Api {
       }
       sig.timestamp = Date.now()
       payload.sigs.push(sig)
-      const errors = this._validate(payload, whitelist)
+      const errors = validate(payload, whitelist)
       if (errors.length) return cb(errors)
       if (payload.sigs.length === payload.sigsRequired) {
         payload.completed = true
       }
 
-      const opts = {seq: payload.sigs.length, k: payload.uuid}
-      const wasteland = this.ctx.wasteland
+      const opts = {seq: payload.sigs.length, salt: payload.uuid}
       wasteland.put(payload, opts, function (err, res) {
         if (err) return cb(err)
-        this._notify(payload, res, whitelist)
-        return cb(null, res)
+        notify(payload, res, whitelist)
+        cb(null, res)
       })
     })
   }
@@ -105,9 +126,9 @@ class Senatus extends Api {
       })
     }
 
-    if (!this._verifySigs(payload, whitelist)) {
-      errors.push(new Error('signatures are not matched'))
-    }
+    // if (!this._verifySigs(payload, whitelist)) {
+    //   errors.push(new Error('signatures are not matched'))
+    // }
 
     return errors
   }
@@ -121,13 +142,13 @@ class Senatus extends Api {
       payload.signers.forEach(function (signer) {
         const user = whitelist.get(signer)
         sendmail({
-          from: 'no-reply@bitfinex.com',
+          from: 'fei@bitfinex.com',
           to: user.email,
           subject: hash + ' has been signed',
-          text: 'The following has been signed\n\n' + JSON.stringify(payload),
-        }, function(err, reply) {
-          console.log(err && err.stack);
-          console.dir(reply);
+          text: 'The following has been signed\n\n' + JSON.stringify(payload)
+        }, function (err, reply) {
+          console.log(err && err.stack)
+          console.dir(reply)
         })
       })
     } else {
@@ -135,13 +156,13 @@ class Senatus extends Api {
         if (!_.includes(payload.sigs, {signer: signer})) {
           const user = whitelist.get(signer)
           sendmail({
-            from: 'no-reply@bitfinex.com',
+            from: 'fei@bitfinex.com',
             to: user.email,
             subject: hash + ' requires your signature',
-            text: 'Your signature is required for ' + hash,
-          }, function(err, reply) {
-            console.log(err && err.stack);
-            console.dir(reply);
+            text: 'Your signature is required for ' + hash
+          }, function (err, reply) {
+            console.log(err && err.stack)
+            console.dir(reply)
           })
         }
       })

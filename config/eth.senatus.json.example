@@ -1,4 +1,0 @@
-{
-  type: 'eth',
-  whitelistKey: 'eth_whitelist'
-}

@@ -8,7 +8,7 @@ function bootTwoGrapes (cb) {
   const grape1 = new Grape({
     dht_port: 20002,
     dht_bootstrap: [ '127.0.0.1:20001' ],
-    api_port: 40001
+    api_port: 30002
   })
   const grape2 = new Grape({
     dht_port: 20001,

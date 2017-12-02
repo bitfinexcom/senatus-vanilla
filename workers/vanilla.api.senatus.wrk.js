@@ -2,12 +2,11 @@
 
 const WrkSenatusApi = require('./api.senatus.wrk')
 
-class WrkSenatusApiEtp extends WrkSenatusApi {
-
+class WrkSenatusApiVanilla extends WrkSenatusApi {
   constructor (conf, ctx) {
     super(conf, ctx)
 
-    this.loadConf('eth.senatus', 'senatus')
+    this.loadConf('vanilla.senatus', 'senatus')
 
     this.init()
     this.start()
@@ -15,10 +14,9 @@ class WrkSenatusApiEtp extends WrkSenatusApi {
 
   getApiConf () {
     return {
-      path: 'eth.senatus'
+      path: 'vanilla.senatus'
     }
   }
-
 }
 
-module.exports = WrkCoinApiEtp
+module.exports = WrkSenatusApiVanilla
