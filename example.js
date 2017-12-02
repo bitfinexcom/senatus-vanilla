@@ -43,8 +43,6 @@ const addSigQuery = {
   ]
 }
 
-let payloadHash
-
 peer.request('rest:senatus:vanilla', addSigQuery, { timeout: 10000 }, (err, res) => {
   if (err) {
     console.error(err)
@@ -54,21 +52,21 @@ peer.request('rest:senatus:vanilla', addSigQuery, { timeout: 10000 }, (err, res)
   console.log('addSig response:')
   console.log(res)
   console.log('---')
-  payloadHash = res
-})
+  const payloadHash = res
 
-const getPayloadQuery = {
-  action: 'getPayload',
-  'args': [payloadHash]
-}
-
-peer.request('rest:senatus:vanilla', getPayloadQuery, { timeout: 10000 }, (err, res) => {
-  if (err) {
-    console.error(err)
-    process.exit(1)
+  const getPayloadQuery = {
+    action: 'getPayload',
+    'args': [payloadHash]
   }
 
-  console.log('getPayload response:')
-  console.log(res)
-  console.log('---')
+  peer.request('rest:senatus:vanilla', getPayloadQuery, { timeout: 10000 }, (err, res) => {
+    if (err) {
+      console.error(err)
+      process.exit(1)
+    }
+
+    console.log('getPayload response:')
+    console.log(res)
+    console.log('---')
+  })
 })
