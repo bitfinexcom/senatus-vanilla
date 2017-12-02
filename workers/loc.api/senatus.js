@@ -1,7 +1,6 @@
 'use strict'
 
 const _ = require('lodash')
-const async = require('async')
 const uuid = require('uuid')
 const sendmail = require('sendmail')()
 
