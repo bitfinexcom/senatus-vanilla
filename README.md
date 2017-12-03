@@ -58,7 +58,7 @@ node worker.js --env=development --wtype=wrk-senatus-api-vanilla --apiPort 8721
     'args': []
   }
 
-  peer.request('rest:senatus:eth', query, { timeout: 10000 }, (err, res) => {
+  peer.request('rest:senatus:vanilla', query, { timeout: 10000 }, (err, res) => {
     if (err) {
       console.error(err)
       process.exit(1)
