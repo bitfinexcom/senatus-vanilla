@@ -76,7 +76,7 @@ class Senatus extends Api {
       sig.timestamp = Date.now()
       payload.sigs.push(sig)
       const errors = validate(payload, whitelist)
-      if (errors.length) return cb(errors)
+      if (errors.length) return cb(new Error(JSON.stringify(errors)))
       if (payload.sigs.length === payload.sigsRequired) {
         payload.completed = true
       }
