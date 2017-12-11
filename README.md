@@ -23,7 +23,7 @@ grape --dp 20002 --aph 30002 --bn '127.0.0.1:20001'
 node worker.js --env=development --wtype=wrk-senatus-api-vanilla --apiPort 8721
 ```
 
-## Grenache API
+## Senatus API
 
 ### action: 'getWhitelist'
 
