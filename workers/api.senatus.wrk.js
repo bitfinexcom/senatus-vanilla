@@ -9,16 +9,7 @@ const { WrkApi } = require('bfx-wrk-api')
 class WrkSenatusApi extends WrkApi {
   init () {
     super.init()
-
-    this.setInitFacs([
-      ['fac', 'senatus', '0', '0', {}, -3]
-    ])
-
     this._initWasteland(this.conf.senatus)
-  }
-
-  getGrcServices () {
-    return [`rest:senatus:${this.senatus_0.getType()}`]
   }
 
   getPluginCtx (type) {

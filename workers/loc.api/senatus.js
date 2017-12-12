@@ -8,36 +8,16 @@ const { Api } = require('bfx-wrk-api')
 
 class Senatus extends Api {
   _space (service, msg) {
-    const space = super._space(service, msg)
-    space.type = space.svp[2]
-    return space
+    return super._space(service, msg)
   }
 
   getWhitelist (space, cb) {
-    // const wasteland = this.ctx.wasteland
-    // const whitelistKey = this.ctx.whitelistKey
-    // wasteland.get(whitelistKey, {}, function (err, res) {
-    //   if (err) return cb(err)
-    //   return cb(null, res)
-    // })
-
-    return cb(null, [
-      {
-        username: 'alice',
-        email: 'fyang1024@gmail.com',
-        pubkey: '0x3398dB97a2d2D428537F747D9814587D23C832a6'
-      },
-      {
-        username: 'bob',
-        email: 'fyang1024@gmail.com',
-        pubkey: '0x3398dB97a2d2D428537F747D9814587D23C832a6'
-      },
-      {
-        username: 'carol',
-        email: 'fyang1024@gmail.com',
-        pubkey: '0x3398dB97a2d2D428537F747D9814587D23C832a6'
-      }
-    ])
+    const wasteland = this.ctx.wasteland
+    const whitelistKey = this.ctx.whitelistKey
+    wasteland.get(whitelistKey, {}, function (err, res) {
+      if (err) return cb(err)
+      return cb(null, res)
+    })
   }
 
   getPayload (space, hash, cb) {
@@ -58,6 +38,7 @@ class Senatus extends Api {
       return cb(new Error('ERROR_PROVIDE_PAYLOAD_SIG'))
     }
     const validate = this._validate
+    const verifySigs = this._verifySigs
     const notify = this._notify
     const wasteland = this.ctx.wasteland
     this.getWhitelist(space, function (err, res) {
@@ -80,6 +61,8 @@ class Senatus extends Api {
       if (payload.sigs.length === payload.sigsRequired) {
         payload.completed = true
       }
+
+      if (!verifySigs(payload, whitelist)) return cb(new Error('Signatures are not matched'))
 
       const opts = {seq: payload.sigs.length, salt: payload.uuid}
       wasteland.put(payload, opts, function (err, res) {
@@ -124,10 +107,6 @@ class Senatus extends Api {
         }
       })
     }
-
-    // if (!this._verifySigs(payload, whitelist)) {
-    //   errors.push(new Error('signatures are not matched'))
-    // }
 
     return errors
   }
