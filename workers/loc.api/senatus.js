@@ -12,12 +12,29 @@ class Senatus extends Api {
   }
 
   getWhitelist (space, cb) {
-    const wasteland = this.ctx.wasteland
-    const whitelistKey = this.ctx.whitelistKey
-    wasteland.get(whitelistKey, {}, function (err, res) {
-      if (err) return cb(err)
-      return cb(null, res)
-    })
+    // const wasteland = this.ctx.wasteland
+    // const whitelistKey = this.ctx.whitelistKey
+    // wasteland.get(whitelistKey, {}, function (err, res) {
+    //   if (err) return cb(err)
+    //   return cb(null, res)
+    // })
+    return cb(null, [
+      {
+        username: 'alice',
+        email: 'fyang1024@gmail.com',
+        pubkey: '0x3398dB97a2d2D428537F747D9814587D23C832a6'
+      },
+      {
+        username: 'bob',
+        email: 'fyang1024@gmail.com',
+        pubkey: '0x3398dB97a2d2D428537F747D9814587D23C832a6'
+      },
+      {
+        username: 'carol',
+        email: 'fyang1024@gmail.com',
+        pubkey: '0x3398dB97a2d2D428537F747D9814587D23C832a6'
+      }
+    ])
   }
 
   getPayload (space, hash, cb) {
@@ -48,12 +65,15 @@ class Senatus extends Api {
         whitelist.set(user.username, user)
       })
 
+      if (!verifySigs(payload, sig, whitelist)) return cb(new Error('Signatures are not matched'))
+
       if (!payload.uuid) {
         payload.uuid = uuid.v4()
       }
       if (!payload.sigs) {
         payload.sigs = []
       }
+
       sig.timestamp = Date.now()
       payload.sigs.push(sig)
       const errors = validate(payload, whitelist)
@@ -61,8 +81,6 @@ class Senatus extends Api {
       if (payload.sigs.length === payload.sigsRequired) {
         payload.completed = true
       }
-
-      if (!verifySigs(payload, whitelist)) return cb(new Error('Signatures are not matched'))
 
       const opts = {seq: payload.sigs.length, salt: payload.uuid}
       wasteland.put(payload, opts, function (err, res) {
@@ -111,7 +129,7 @@ class Senatus extends Api {
     return errors
   }
 
-  _verifySigs (payload, whitelist) {
+  _verifySigs (payload, sig, whitelist) {
     return false
   }
 
