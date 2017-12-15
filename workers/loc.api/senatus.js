@@ -77,7 +77,7 @@ class Senatus extends Api {
       sig.timestamp = Date.now()
       payload.sigs.push(sig)
       const errors = validate(payload, whitelist)
-      if (errors.length) return cb(new Error(JSON.stringify(errors)))
+      if (errors.length) return cb(new Error(errors))
       if (payload.sigs.length === payload.sigsRequired) {
         payload.completed = true
       }
@@ -95,33 +95,37 @@ class Senatus extends Api {
     const errors = []
 
     if (!payload.msg) {
-      errors.push(new Error('Message required'))
+      errors.push('Message required')
     }
 
     if (!payload.signers || !Array.isArray(payload.signers)) {
-      errors.push(new Error('Signer array not specified'))
+      errors.push('Signer array not specified')
     } else if (payload.signers.length === 0) {
-      errors.push(new Error('At least one signer required'))
+      errors.push('At least one signer required')
     } else {
       payload.signers.forEach(function (signer) {
         if (!whitelist.get(signer)) {
-          errors.push(new Error(signer + ' not found in the whitelist'))
+          errors.push(signer + ' not found in the whitelist')
         }
       })
     }
 
     if (!payload.sigsRequired || !Number.isInteger(payload.sigsRequired)) {
-      errors.push(new Error('sigsRequired not specified'))
+      errors.push('sigsRequired not specified')
     } else if (payload.sigsRequired > payload.signers.length) {
-      errors.push(new Error('sigsRequired cannot exceed number of signers'))
+      errors.push('sigsRequired cannot exceed number of signers')
     }
 
     if (!Array.isArray(payload.sigs)) {
-      errors.push(new Error('signatures should be an array'))
+      errors.push('signatures should be an array')
     } else if (Array.isArray(payload.signers)) {
+      const signers = _.map(payload.sigs, 'signer')
+      if (_.uniq(signers).length < signers.length) {
+        errors.push('duplicates found in sigs')
+      }
       payload.sigs.forEach(function (sig) {
         if (!_.includes(payload.signers, sig.signer)) {
-          errors.push(new Error(sig.signer + ' not in signer list'))
+          errors.push(sig.signer + ' not in signer list')
         }
       })
     }
