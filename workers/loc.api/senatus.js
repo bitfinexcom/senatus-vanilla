@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash')
+const async = require('async')
 const uuid = require('uuid')
 const sendmail = require('sendmail')()
 
@@ -58,6 +59,9 @@ class Senatus extends Api {
     const verifySigs = this._verifySigs
     const notify = this._notify
     const wasteland = this.ctx.wasteland
+    const getPayloadHashes = this._getPayloadHashes
+    const setPayloadHashes = this._setPayloadHashes
+    const grc = this.ctx.grc_bfx
     this.getWhitelist(space, function (err, res) {
       if (err) return cb(err)
       const whitelist = new Map()
@@ -85,10 +89,70 @@ class Senatus extends Api {
       const opts = {seq: payload.sigs.length, salt: payload.uuid}
       wasteland.put(payload, opts, function (err, res) {
         if (err) return cb(err)
+        async.each(payload.signers, function (signer) {
+          getPayloadHashes(grc, signer, function (err, hashes) {
+            if (err) return cb(err)
+            if (!hashes) hashes = []
+            if (!_.includes(hashes, res)) {
+              hashes.push(res)
+              setPayloadHashes(grc, signer, hashes, function (err, res) {
+                if (err) return cb(err)
+              })
+            }
+          })
+        })
         notify(payload, res, whitelist)
         cb(null, res)
       })
     })
+  }
+
+  getPayloads (space, opts, cb) {
+    if (!cb) {
+      cb = opts
+      return cb(new Error('ERROR_PROVIDE_OPTS'))
+    }
+    const wasteland = this.ctx.wasteland
+    this.ctx.grc_bfx.req(
+      'rest:db:kv',
+      'get',
+      [opts.signer],
+      {},
+      function (err, hashes) {
+        if (err) return cb(err)
+        async.map(hashes, function (hash) {
+          wasteland.get(hash, {}, function (err, res) {
+            if (err) return cb(err)
+            cb(null, res)
+          })
+        }, function (err, payloads) {
+          if (err) return cb(err)
+          const filteredPayloads = _.filter(payloads, {completed: opts.completed})
+          cb(null, filteredPayloads)
+        })
+      }
+    )
+  }
+
+  _getPayloadHashes (grc, signer, cb) {
+    grc.req(
+      'rest:db:kv',
+      'get',
+      [signer],
+      {},
+      cb
+    )
+  }
+
+  _setPayloadHashes (grc, signer, hashes, cb) {
+    console.log(signer, hashes)
+    grc.req(
+      'rest:db:kv',
+      'set',
+      [signer, hashes],
+      {},
+      cb
+    )
   }
 
   _validate (payload, whitelist) {

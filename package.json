@@ -16,6 +16,8 @@
     "bfx-svc-boot-js": "https://github.com/bitfinexcom/bfx-svc-boot-js.git",
     "bfx-wrk-api": "git+https://github.com/bitfinexcom/bfx-wrk-api.git",
     "bfx-wrk-base": "git+https://github.com/bitfinexcom/bfx-wrk-base.git",
+    "bfx-facs-api": "git+https://github.com/bitfinexcom/bfx-facs-api.git",
+    "bfx-facs-grc": "git+https://github.com/bitfinexcom/bfx-facs-grc.git",
     "eth-sig-util": "^1.4.0",
     "ethereumjs-util": "^5.1.2",
     "lodash": "^4.17.4",

@@ -69,4 +69,25 @@ peer.request('rest:senatus:vanilla', addSigQuery, { timeout: 10000 }, (err, res)
     console.log(res)
     console.log('---')
   })
+
+  const getPayloadsQuery = {
+    action: 'getPayloads',
+    'args': [
+      {
+        signer: 'alice',
+        completed: false
+      }
+    ]
+  }
+
+  peer.request('rest:senatus:vanilla', getPayloadsQuery, { timeout: 10000 }, (err, res) => {
+    if (err) {
+      console.error(err)
+      process.exit(1)
+    }
+
+    console.log('getPayloads response:')
+    console.log(res)
+    console.log('---')
+  })
 })

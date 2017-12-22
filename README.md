@@ -23,6 +23,12 @@ grape --dp 20002 --aph 30002 --bn '127.0.0.1:20001'
 node worker.js --env=development --wtype=wrk-senatus-api-vanilla --apiPort 8721
 ```
 
+### Boot Dependent Worker
+
+```
+node worker.js --env=development --wtype=wrk-db-kv-api --apiPort 8722
+```
+
 ## Senatus API
 
 ### action: 'getWhitelist'
